@@ -1,0 +1,97 @@
+@page "/eventmanager"
+
+@using event_ease
+@using event_ease.Services
+@inject EventService EventService
+@inject UserSessionService UserSession
+
+<PageTitle>Event List</PageTitle>
+
+<h1>Event Manager</h1>
+
+<h4>Event List</h4>
+<ul>
+    @if (Events.Count == 0)
+    {
+        <p>No events available.</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var eventItem in Events)
+                {
+                    <tr>
+                        <td>@eventItem.Name</td>
+                        <td>@eventItem.Date.ToString("MMMM dd, yyyy")</td>
+                        <td>@eventItem.Location</td>
+                        <td>
+                            @if (eventItem.IsCompleted)
+                            {
+                                <span style="color: green;">Completed</span>
+                            }
+                            else
+                            {
+                                <span style="color: red;">Pending</span>
+                            }
+                        </td>
+                        <td>
+                            <NavLink href="@($"/details/{eventItem.Name}")">View Details</NavLink>&nbsp;
+                            @if (!eventItem.IsCompleted)
+                            {
+                                <button @onclick="() => DeleteEvent(eventItem.Name)" class="btn btn-danger btn-sm">Delete</button>
+                                <button @onclick="() => CompleteEvent(eventItem.Name)"
+                                    class="btn btn-success btn-sm">Complete</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</ul>
+
+<hr />
+
+@code {
+    private List<Event> Events = new();
+    private Event NewEvent = new Event { Date = DateTime.Today };
+
+    protected override void OnInitialized()
+    {
+        // Load initial events from the service
+        Events = EventService.GetAllEvents().ToList();
+    }
+
+    private void AddEvent()
+    {
+        if (!string.IsNullOrWhiteSpace(NewEvent.Name) && NewEvent.Date != default &&
+        !string.IsNullOrWhiteSpace(NewEvent.Location))
+        {
+            EventService.AddEvent(NewEvent);
+            Events = EventService.GetAllEvents().ToList(); // Refresh the list
+            NewEvent = new Event { Date = DateTime.Today }; // Reset the form
+        }
+    }
+
+    private void DeleteEvent(string eventName)
+    {
+        EventService.DeleteEvent(eventName);
+        Events = EventService.GetAllEvents().ToList(); // Refresh the list
+    }
+
+    private void CompleteEvent(string eventName)
+    {
+        EventService.CompleteEvent(eventName);
+        Events = EventService.GetAllEvents().ToList(); // Refresh the list
+    }
+}

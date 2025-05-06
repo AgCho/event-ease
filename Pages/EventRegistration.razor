@@ -1,0 +1,59 @@
+@page "/eventregister"
+
+@using event_ease
+@using event_ease.Services
+@inject EventService EventService
+@inject UserSessionService UserSession
+
+<PageTitle>Event Registration</PageTitle>
+
+<h1>Register a New Event</h1>
+
+<EditForm Model="NewEvent" OnValidSubmit="AddEvent">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <h4>Add New Event</h4>
+        <label>Event Name:</label>
+        <input type="text" placeholder="Event Name" @bind="NewEvent.Name" class="form-control" />
+        <ValidationMessage For="@(() => NewEvent.Name)" />
+
+        <label>Date:</label>
+        <input type="date" @bind="NewEvent.Date" class="form-control" />
+        <ValidationMessage For="@(() => NewEvent.Date)" />
+
+        <label>Location:</label>
+        <input type="text" placeholder="Location" @bind="NewEvent.Location" class="form-control" />
+        <ValidationMessage For="@(() => NewEvent.Location)" />
+
+        <label>Email Address:</label>
+        <input type="email" placeholder="Email Address" @bind="NewEvent.Email" class="form-control" />
+        <ValidationMessage For="@(() => NewEvent.Email)" />
+
+        <button type="submit" class="btn btn-primary">Add Event</button>
+    </div>
+</EditForm>
+
+@if (IsEventAdded)
+{
+    <p style="color: green;">Event added successfully!</p>
+}
+
+@code {
+    private Event NewEvent = new Event { Date = DateTime.Today };
+    private bool IsEventAdded = false;
+
+    private void AddEvent()
+    {
+        if (!string.IsNullOrWhiteSpace(NewEvent.Name) && 
+        NewEvent.Date != default && 
+        !string.IsNullOrWhiteSpace(NewEvent.Location) &&
+        !string.IsNullOrWhiteSpace(NewEvent.Email))
+        {
+            EventService.AddEvent(NewEvent);
+            IsEventAdded = true; // Show success message
+            NewEvent = new Event { Date = DateTime.Today }; // Reset the form
+        }
+    }
+}

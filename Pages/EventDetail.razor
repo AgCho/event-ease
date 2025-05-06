@@ -1,0 +1,62 @@
+@page "/details/{eventName}"
+
+@using event_ease
+@using event_ease.Services
+@inject EventService EventService
+@inject UserSessionService UserSession
+
+<PageTitle>Event Details</PageTitle>
+
+<h1>Event Details</h1>
+
+@if (SelectedEvent == null)
+{
+    <p>Event not found.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <caption><strong>Event Details Overview</strong></caption>
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Event Name</strong></td>
+                <td>@SelectedEvent.Name</td>
+            </tr>
+            <tr>
+                <td><strong>Date</strong></td>
+                <td>@SelectedEvent.Date.ToString("MMMM dd, yyyy")</td>
+            </tr>
+            <tr>
+                <td><strong>Location</strong></td>
+                <td>@SelectedEvent.Location</td>
+            </tr>
+            <tr>
+                <td><strong>Email Address</strong></td>
+                <td>@SelectedEvent.Email</td>
+            </tr>
+            <tr>
+                <td><strong>Status</strong></td>
+                <td>@(SelectedEvent.IsCompleted ? "Completed" : "Pending")</td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public string EventName { get; set; } = string.Empty;
+
+    private Event? SelectedEvent;
+
+    protected override void OnInitialized()
+    {
+        // Fetch the event details from the service
+        SelectedEvent = EventService.GetAllEvents().FirstOrDefault(e => e.Name == EventName);
+    }
+}

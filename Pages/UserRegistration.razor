@@ -1,0 +1,40 @@
+@page "/userregister"
+
+@using event_ease
+@using Microsoft.AspNetCore.Components.Forms
+
+<h1>Registration Form</h1>
+
+<EditForm Model="User" OnValidSubmit="RegisterUser">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Name:</label>
+        <input type="text" @bind="User.Name" class="form-control" />
+        <ValidationMessage For="@(() => User.Name)" />
+
+        <label>Email:</label>
+        <input type="email" @bind="User.Email" class="form-control" />
+        <ValidationMessage For="@(() => User.Email)" />
+
+        <button type="submit" class="btn btn-primary">Register</button>
+    </div>
+</EditForm>
+
+@if (IsRegistered)
+{
+    <p style="color: green;">Registration successful! Welcome, @User.Name!</p>
+}
+
+@code {
+    private User User = new User();
+    private bool IsRegistered = false;
+
+    private void RegisterUser()
+    {
+        // Simulate registration logic
+        IsRegistered = true;
+        Console.WriteLine($"User Registered: {User.Name}, {User.Email}");
+    }
+}
