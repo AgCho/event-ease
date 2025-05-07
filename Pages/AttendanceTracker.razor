@@ -1,0 +1,83 @@
+@page "/attendance"
+@inject event_ease.Services.AttendanceTrackerService AttendanceTrackerService
+
+<h1>Attendance Tracker</h1>
+
+<div>
+    <h3>Register Attendance</h3>
+    <EditForm Model="AttendanceModel" OnValidSubmit="RegisterAttendance">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label>Event ID:</label>
+            <InputNumber @bind-Value="AttendanceModel.EventId" class="form-control" style="width: 300px;" />
+            <ValidationMessage For="@(() => AttendanceModel.EventId)" />
+        </div>
+
+        <div>
+            <label>Name:</label>
+            <InputText @bind-Value="AttendanceModel.UserName" class="form-control" style="width: 300px;" />
+            <ValidationMessage For="@(() => AttendanceModel.UserName)" />
+        </div>
+
+        <div>
+            <label>Email:</label>
+            <InputText @bind-Value="AttendanceModel.Email" class="form-control" style="width: 300px;" />
+            <ValidationMessage For="@(() => AttendanceModel.Email)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-2">Register</button>
+    </EditForm>
+</div>
+
+<div class="mt-4">
+    <h3>Attendees for Event</h3>
+    <div>
+        <button class="btn btn-secondary mt-2" @onclick="LoadAttendees">Load Attendees</button>
+    </div>
+
+    @if (Attendees.Any())
+    {
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Event ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var attendee in Attendees)
+                {
+                    <tr>
+                        <td>@attendee.EventId</td>
+                        <td>@attendee.UserName</td>
+                        <td>@attendee.Email</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else if (SelectedEventId > 0)
+    {
+        <p>No attendees found for this event.</p>
+    }
+</div>
+
+@code {
+    private Attendance AttendanceModel = new Attendance();
+    private int SelectedEventId;
+    private List<Attendance> Attendees = new();
+
+    private void RegisterAttendance()
+    {
+        AttendanceTrackerService.RegisterAttendance(AttendanceModel.EventId, AttendanceModel.UserName, AttendanceModel.Email);
+        AttendanceModel = new Attendance(); // Reset the form
+    }
+
+    private void LoadAttendees()
+    {
+        Attendees = AttendanceTrackerService.GetAllAttendees();
+    }
+}

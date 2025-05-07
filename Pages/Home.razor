@@ -1,5 +1,51 @@
 ﻿@page "/"
 
+@inject event_ease.Services.UserSessionService UserSession
+@inject NavigationManager NavigationManager
+
 <PageTitle>Home</PageTitle>
 
 <h1>Welcome to Event Ease App!</h1>
+
+@if (!UserSession.IsUserLoggedIn(UserSession.GetSessionEmail() ?? string.Empty))
+{
+    <div>
+        <h3>Please log in to access the app features.</h3>
+        <input type="email" @bind="Email" placeholder="Enter your email" class="form-control" style="width: 300px;"/>
+        <button class="btn btn-primary mt-2" @onclick="Login">Log In</button>
+        @if (LoginFailed)
+        {
+            <p style="color: red;">Login failed. Please register first.</p>
+        }
+    </div>
+}
+else
+{
+    <div>
+        <h3>You are logged in as @UserSession.GetSessionEmail()!</h3>
+        <button class="btn btn-secondary mt-2" @onclick="Logout">Log Out</button>
+    </div>
+}
+
+@code {
+    private string Email = string.Empty;
+    private bool LoginFailed = false;
+
+    private void Login()
+    {
+        if (UserSession.Login(Email))
+        {
+            LoginFailed = false;
+            NavigationManager.NavigateTo("/"); 
+        }
+        else
+        {
+            LoginFailed = true;
+        }
+    }
+
+    private void Logout()
+    {
+        UserSession.Logout();
+    }
+}

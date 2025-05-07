@@ -16,22 +16,22 @@
     <div>
         <h4>Add New Event</h4>
         <label>Event Name:</label>
-        <input type="text" placeholder="Event Name" @bind="NewEvent.Name" class="form-control" />
+        <input type="text" placeholder="Event Name" @bind="NewEvent.Name" class="form-control" style="width: 300px;" />
         <ValidationMessage For="@(() => NewEvent.Name)" />
 
         <label>Date:</label>
-        <input type="date" @bind="NewEvent.Date" class="form-control" />
+        <input type="date" @bind="NewEvent.Date" class="form-control" style="width: 300px;" />
         <ValidationMessage For="@(() => NewEvent.Date)" />
 
         <label>Location:</label>
-        <input type="text" placeholder="Location" @bind="NewEvent.Location" class="form-control" />
+        <input type="text" placeholder="Location" @bind="NewEvent.Location" class="form-control" style="width: 300px;" />
         <ValidationMessage For="@(() => NewEvent.Location)" />
 
         <label>Email Address:</label>
-        <input type="email" placeholder="Email Address" @bind="NewEvent.Email" class="form-control" />
+        <input type="email" placeholder="Email Address" @bind="NewEvent.Email" class="form-control" style="width: 300px;" />
         <ValidationMessage For="@(() => NewEvent.Email)" />
 
-        <button type="submit" class="btn btn-primary">Add Event</button>
+        <button type="submit" class="btn btn-primary mt-2">Add Event</button>
     </div>
 </EditForm>
 

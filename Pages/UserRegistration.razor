@@ -1,4 +1,5 @@
 @page "/userregister"
+@inject event_ease.Services.UserSessionService UserSession
 
 @using event_ease
 @using Microsoft.AspNetCore.Components.Forms
@@ -11,30 +12,75 @@
 
     <div>
         <label>Name:</label>
-        <input type="text" @bind="User.Name" class="form-control" />
+        <input type="text" @bind="User.Name" class="form-control" style="width: 300px;" />
         <ValidationMessage For="@(() => User.Name)" />
 
         <label>Email:</label>
-        <input type="email" @bind="User.Email" class="form-control" />
+        <input type="email" @bind="User.Email" class="form-control" style="width: 300px;" />
         <ValidationMessage For="@(() => User.Email)" />
 
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary mt-2">Register</button>
     </div>
 </EditForm>
 
 @if (IsRegistered)
 {
     <p style="color: green;">Registration successful! Welcome, @User.Name!</p>
+    <p>
+        Please <a href="/">click here</a> to go to the Home page and log in.
+    </p>
 }
+
+<div class="mt-4">
+    <h3>Attendees for Event</h3>
+    <div>
+        <button class="btn btn-secondary mt-2" @onclick="LoadUsers">Load AttUsers</button>
+    </div>
+
+     @if (RegisterUsers.Any())
+    {
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Login Staus</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in RegisterUsers)
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@user.Email</td>
+                        <td>@user.IsLoggedIn</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+</div>
 
 @code {
     private User User = new User();
     private bool IsRegistered = false;
 
+    private List<User> RegisterUsers = new();
+
     private void RegisterUser()
     {
         // Simulate registration logic
         IsRegistered = true;
+        User.IsLoggedIn = false;
+
+        UserSession.AddUser(User);
+
         Console.WriteLine($"User Registered: {User.Name}, {User.Email}");
+    }
+
+    private void LoadUsers()
+    {
+        RegisterUsers = UserSession.GetAllUsers();
     }
 }

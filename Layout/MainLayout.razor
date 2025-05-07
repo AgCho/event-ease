@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@inject event_ease.Services.UserSessionService UserSession
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,7 +8,17 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            @if (UserSession.GetSessionEmail() != null)
+            {
+                var loggedInUser = UserSession.GetAllUsers().FirstOrDefault(u => u.Email == UserSession.GetSessionEmail());
+                if (loggedInUser != null)
+                {
+                    <span class="ms-3">
+                        Logged in as: <strong>@loggedInUser.Name</strong>
+                        <button class="btn btn-link btn-sm ms-2" @onclick="Logout">Log Out</button>
+                    </span>
+                }
+            }
         </div>
 
         <article class="content px-4">
@@ -14,3 +26,10 @@
         </article>
     </main>
 </div>
+
+@code {
+    private void Logout()
+    {
+        UserSession.Logout();
+    }
+}
